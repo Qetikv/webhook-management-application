@@ -333,6 +333,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
   }
 
   .status-checkbox.selected {
@@ -604,11 +605,9 @@
           <div class="custom-headers-container">
             <div class="form-group">
               <label class="form-label">OAuthor</label>
-              <div class="event-row" style="padding: 0;">
-                <div class="event-content" style="width: 100%; padding: 0.625rem;">
-                  <span>Client Credentials Flow</span>
-                </div>
-                <span class="arrow-icon" on:click={() => showOAuthorDropdown = !showOAuthorDropdown}>{arrowIcon}</span>
+              <div style="border: 1px solid #ddd; border-radius: 4px; padding: 0.625rem; display: flex; align-items: center; justify-content: space-between; background-color: #f5f5f5;">
+                <span style="color: #666;">Client Credentials Flow</span>
+                <span class="arrow-icon" style="border: none; margin-left: 0.5rem;" on:click={() => showOAuthorDropdown = !showOAuthorDropdown}>{arrowIcon}</span>
               </div>
             </div>
             {#if showOAuthorDropdown}
@@ -725,10 +724,11 @@
             </div>
 
             {#if showPayInStatuses}
-              <div class="statuses-dropdown">
+              <div class="statuses-dropdown" style="display: flex; flex-wrap: wrap; gap: 1rem; padding: 0.5rem;">
                 {#each statuses as status}
-                  <div 
+                  <div
                     class="status-option"
+                    style="flex: 0 1 auto;"
                     on:click={() => {
                       const index = payInStatuses.indexOf(status);
                       if (index === -1) {
@@ -763,10 +763,11 @@
             </div>
 
             {#if showPayOutStatuses}
-              <div class="statuses-dropdown">
+              <div class="statuses-dropdown" style="display: flex; flex-wrap: wrap; gap: 1rem; padding: 0.5rem;">
                 {#each statuses as status}
-                  <div 
+                  <div
                     class="status-option"
+                    style="flex: 0 1 auto;"
                     on:click={() => {
                       const index = payOutStatuses.indexOf(status);
                       if (index === -1) {
@@ -792,8 +793,7 @@
           class="create-button"
           disabled={!nickname || !webhookUrl || !selectedAuthType}
         >
-          <span>+</span>
-          <span>Create webhook</span>
+          <span>+ Create</span>
         </button>
       </form>
     </div>
