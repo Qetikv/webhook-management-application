@@ -109,7 +109,22 @@
     border-radius: 8px;
     width: 95%;
     max-width: 800px;
-    padding: 2rem;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 2rem 2rem 1.5rem;
+    background: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+
+  .modal-content {
+    padding: 0 2rem 2rem;
+    overflow-y: auto;
+    flex: 1;
   }
 
   .modal-header {
@@ -494,7 +509,7 @@
         <button class="close-button" on:click={handleClose}>&times;</button>
       </div>
 
-      <form on:submit|preventDefault={handleSubmit}>
+      <form on:submit|preventDefault={handleSubmit} class="modal-content">
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="nickname">Nickname</label>

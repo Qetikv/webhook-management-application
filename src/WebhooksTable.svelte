@@ -24,6 +24,7 @@
   let itemsPerPage = 10;
   let currentPage = 1;
   let isFilterOpen = false;
+  let activeDropdown: string | null = null;
 
   $: filteredWebhooks = webhooks.filter(webhook => 
     webhook.nickname.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -43,6 +44,30 @@
       error = err instanceof Error ? err.message : 'Failed to edit webhook';
     } finally {
       loading = false;
+      activeDropdown = null;
+    }
+  }
+
+  async function deleteWebhook(webhook: Webhook) {
+    try {
+      loading = true;
+      console.log('Delete webhook:', webhook);
+    } catch (err) {
+      error = err instanceof Error ? err.message : 'Failed to delete webhook';
+    } finally {
+      loading = false;
+      activeDropdown = null;
+    }
+  }
+
+  function toggleDropdown(webhookId: string) {
+    activeDropdown = activeDropdown === webhookId ? null : webhookId;
+  }
+
+  function handleClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.dropdown') && !target.closest('.action-menu')) {
+      activeDropdown = null;
     }
   }
 
@@ -64,6 +89,13 @@
     const img = event.target as HTMLImageElement;
     img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"%3E%3C/path%3E%3C/svg%3E';
   }
+
+  onMount(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  });
 </script>
 
 <style>
@@ -213,6 +245,49 @@
     padding: 2rem;
     color: #666;
   }
+
+  .dropdown {
+    position: absolute;
+    right: 1rem;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    color: #666;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-size: 14px;
+  }
+
+  .dropdown-item:hover {
+    background-color: #f5f5f5;
+    color: #333;
+  }
+
+  .dropdown-item.delete {
+    color: #dc3545;
+  }
+
+  .dropdown-item.delete:hover {
+    background-color: #fff5f5;
+  }
+
+  td {
+    position: relative;
+  }
 </style>
 
 <div class="container">
@@ -278,11 +353,39 @@
             <button
               type="button"
               class="action-menu"
-              on:click={() => editWebhook(webhook)}
-              aria-label={`Edit webhook ${webhook.nickname}`}
+              on:click={() => toggleDropdown(webhook.id)}
+              aria-label={`Actions for webhook ${webhook.nickname}`}
+              aria-expanded={activeDropdown === webhook.id}
+              aria-haspopup="true"
             >
               ⋮
             </button>
+            {#if activeDropdown === webhook.id}
+              <div class="dropdown" role="menu">
+                <button
+                  class="dropdown-item"
+                  on:click={() => editWebhook(webhook)}
+                  role="menuitem"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path>
+                    <polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon>
+                  </svg>
+                  Edit
+                </button>
+                <button
+                  class="dropdown-item delete"
+                  on:click={() => deleteWebhook(webhook)}
+                  role="menuitem"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Delete
+                </button>
+              </div>
+            {/if}
           </td>
         </tr>
       {:else}
