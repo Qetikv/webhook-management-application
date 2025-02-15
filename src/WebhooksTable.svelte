@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import DeleteWebhookModal from './DeleteWebhookModal.svelte';
 
   interface User {
     avatar: string;
@@ -25,8 +26,29 @@
   let currentPage = 1;
   let isFilterOpen = false;
   let activeDropdown: string | null = null;
+  let webhookToDelete: Webhook | null = null;
+  let showDeleteModal = false;
+  let showSuccessToast = false;
+  let successMessage = '';
 
-  $: filteredWebhooks = webhooks.filter(webhook => 
+  let toastTimeout: NodeJS.Timeout;
+
+  onMount(() => {
+    return () => {
+      if (toastTimeout) clearTimeout(toastTimeout);
+    };
+  });
+
+  function showToast(message: string) {
+    successMessage = message;
+    showSuccessToast = true;
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      showSuccessToast = false;
+    }, 3000);
+  }
+
+  $: filteredWebhooks = webhooks.filter(webhook =>
     webhook.nickname.toLowerCase().includes(searchQuery.toLowerCase()) ||
     webhook.url.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -48,15 +70,29 @@
     }
   }
 
-  async function deleteWebhook(webhook: Webhook) {
+  function handleDeleteClick(webhook: Webhook) {
+    webhookToDelete = webhook;
+    showDeleteModal = true;
+    activeDropdown = null;
+  }
+
+  async function handleConfirmDelete() {
+    if (!webhookToDelete) return;
+    
     try {
       loading = true;
-      console.log('Delete webhook:', webhook);
+      // Here you would make an API call to delete the webhook
+      console.log('Delete webhook:', webhookToDelete);
+      
+      // Mock successful deletion
+      webhooks = webhooks.filter(w => w.id !== webhookToDelete.id);
+      showToast(`"${webhookToDelete.nickname}" deleted successfully`);
+      showDeleteModal = false;
+      webhookToDelete = null;
     } catch (err) {
       error = err instanceof Error ? err.message : 'Failed to delete webhook';
     } finally {
       loading = false;
-      activeDropdown = null;
     }
   }
 
@@ -288,6 +324,47 @@
   td {
     position: relative;
   }
+
+  .success-toast {
+    position: fixed;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease-out;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%);
+    }
+  }
+
+  .success-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #4caf50;
+  }
+
+  .success-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 3;
+  }
 </style>
 
 <div class="container">
@@ -375,7 +452,7 @@
                 </button>
                 <button
                   class="dropdown-item delete"
-                  on:click={() => deleteWebhook(webhook)}
+                  on:click={() => handleDeleteClick(webhook)}
                   role="menuitem"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -397,4 +474,26 @@
       {/each}
     </tbody>
   </table>
+
+  {#if showDeleteModal}
+    <DeleteWebhookModal
+      webhook={webhookToDelete}
+      onClose={() => {
+        showDeleteModal = false;
+        webhookToDelete = null;
+      }}
+      onConfirm={handleConfirmDelete}
+    />
+  {/if}
+
+  {#if showSuccessToast}
+    <div class="success-toast" role="alert">
+      <span class="success-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+      </span>
+      {successMessage}
+    </div>
+  {/if}
 </div>
