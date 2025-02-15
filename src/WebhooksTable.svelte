@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import DeleteWebhookModal from './DeleteWebhookModal.svelte';
   import EditWebhookModal from './EditWebhookModal.svelte';
+  import FilterModal from './lib/components/webhooks/FilterModal.svelte';
 
   interface User {
     avatar: string;
@@ -26,6 +27,8 @@
   let itemsPerPage = 10;
   let currentPage = 1;
   let isFilterOpen = false;
+  let dateFilter = '';
+  let authTypeFilter = '';
   let activeDropdown: string | null = null;
   let webhookToDelete: Webhook | null = null;
   let webhookToEdit: Webhook | null = null;
@@ -51,10 +54,29 @@
     }, 3000);
   }
 
-  $: filteredWebhooks = webhooks.filter(webhook =>
-    webhook.nickname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    webhook.url.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  function isSameDay(date1: string, date2: string): boolean {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    return d1.getFullYear() === d2.getFullYear() &&
+           d1.getMonth() === d2.getMonth() &&
+           d1.getDate() === d2.getDate();
+  }
+
+  $: filteredWebhooks = webhooks.filter(webhook => {
+    const matchesSearch = webhook.nickname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         webhook.url.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesDate = !dateFilter || isSameDay(webhook.createdDate, dateFilter);
+    const matchesAuthType = !authTypeFilter || webhook.authorizationType === authTypeFilter;
+    
+    return matchesSearch && matchesDate && matchesAuthType;
+  });
+
+  function handleFilter(event: CustomEvent) {
+    const { date, authType } = event.detail;
+    dateFilter = date;
+    authTypeFilter = authType;
+  }
 
   $: paginatedWebhooks = filteredWebhooks.slice(
     (currentPage - 1) * itemsPerPage,
@@ -176,9 +198,15 @@
         <div class="filter-line"></div>
         <div class="filter-line"></div>
       </div>
-      <span>Filters</span>
+      <span>Filters {(dateFilter || authTypeFilter) ? `(${[dateFilter, authTypeFilter].filter(Boolean).length})` : ''}</span>
     </button>
   </div>
+
+  <FilterModal
+    isOpen={isFilterOpen}
+    onClose={() => isFilterOpen = false}
+    on:filter={handleFilter}
+  />
 
   <table role="grid">
     <thead>
