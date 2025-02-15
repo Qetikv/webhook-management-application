@@ -97,10 +97,8 @@
   async function handleEditSubmit(event: CustomEvent) {
     try {
       loading = true;
-      // Here you would make an API call to update the webhook
       console.log('Update webhook:', event.detail);
       
-      // Mock successful update
       const updatedWebhook = event.detail;
       webhooks = webhooks.map(w => w.id === updatedWebhook.id ? { ...w, ...updatedWebhook } : w);
       showToast(`"${updatedWebhook.nickname}" updated successfully`);
@@ -124,10 +122,8 @@
     
     try {
       loading = true;
-      // Here you would make an API call to delete the webhook
       console.log('Delete webhook:', webhookToDelete);
       
-      // Mock successful deletion
       webhooks = webhooks.filter(w => w.id !== webhookToDelete.id);
       showToast(`"${webhookToDelete.nickname}" deleted successfully`);
       showDeleteModal = false;

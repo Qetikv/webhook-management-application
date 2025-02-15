@@ -1,14 +1,22 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import CreateWebhookModal from '../CreateWebhookModal.svelte';
-  
-  let isFilterOpen = false;
-  let showCreateModal = false;
+import { page } from '$app/stores';
+import { goto } from '$app/navigation';
+import { onMount } from 'svelte';
+import CreateWebhookModal from '../CreateWebhookModal.svelte';
 
-  function handleCreateWebhook(event: CustomEvent) {
-    console.log('Create webhook:', event.detail);
-    showCreateModal = false;
+let isFilterOpen = false;
+let showCreateModal = false;
+
+onMount(() => {
+  if ($page.url.pathname === '/') {
+    goto('/configuration');
   }
+});
+
+function handleCreateWebhook(event: CustomEvent) {
+  console.log('Create webhook:', event.detail);
+  showCreateModal = false;
+}
 </script>
 
 <div class="app-container">
@@ -50,7 +58,7 @@
         <div class="user-info nav-item">
           <div class="avatar">JD</div>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"/>
+            <polyline points="9 6 15 12 9 18"/>
           </svg>
         </div>
       </div>
@@ -78,7 +86,7 @@
       </div>
 
       <button class="create-button" on:click={() => showCreateModal = true}>
-        Create Webhook
+        Create Webhook +
       </button>
     </header>
 

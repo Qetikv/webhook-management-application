@@ -8,7 +8,6 @@
   let isLoading = false;
   let isSubmitting = false;
 
-  // Modal states
   let showCreateModal = false;
   let showEditModal = false;
   let showDeleteModal = false;
@@ -17,12 +16,10 @@
   async function loadWebhooks() {
     isLoading = true;
     try {
-      // Replace with actual API call
       const response = await fetch('/api/webhooks');
       webhooks = await response.json();
     } catch (error) {
       console.error('Failed to load webhooks:', error);
-      // Handle error (show notification, etc.)
     } finally {
       isLoading = false;
     }
@@ -31,7 +28,6 @@
   async function handleCreate(event: CustomEvent) {
     isSubmitting = true;
     try {
-      // Replace with actual API call
       await fetch('/api/webhooks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -41,7 +37,6 @@
       showCreateModal = false;
     } catch (error) {
       console.error('Failed to create webhook:', error);
-      // Handle error (show notification, etc.)
     } finally {
       isSubmitting = false;
     }
@@ -50,7 +45,6 @@
   async function handleEdit(event: CustomEvent) {
     isSubmitting = true;
     try {
-      // Replace with actual API call
       await fetch(`/api/webhooks/${event.detail.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -60,7 +54,6 @@
       showEditModal = false;
     } catch (error) {
       console.error('Failed to update webhook:', error);
-      // Handle error (show notification, etc.)
     } finally {
       isSubmitting = false;
     }
@@ -69,7 +62,6 @@
   async function handleDelete(event: CustomEvent) {
     isSubmitting = true;
     try {
-      // Replace with actual API call
       await fetch(`/api/webhooks/${event.detail.id}`, {
         method: 'DELETE'
       });
@@ -77,7 +69,6 @@
       showDeleteModal = false;
     } catch (error) {
       console.error('Failed to delete webhook:', error);
-      // Handle error (show notification, etc.)
     } finally {
       isSubmitting = false;
     }
@@ -97,7 +88,6 @@
     showDeleteModal = true;
   }
 
-  // Load webhooks on component mount
   import { onMount } from 'svelte';
   onMount(loadWebhooks);
 </script>
