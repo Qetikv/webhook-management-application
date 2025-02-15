@@ -78,6 +78,11 @@
     authTypeFilter = authType;
   }
 
+  function handleClearAll() {
+    dateFilter = '';
+    authTypeFilter = '';
+  }
+
   $: paginatedWebhooks = filteredWebhooks.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -174,7 +179,8 @@
 
 <div class="container">
   <div class="table-controls">
-    <div class="search-wrapper">
+    <div class="controls-top">
+      <div class="search-wrapper">
       <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"/>
         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -201,6 +207,27 @@
       <span>Filters {(dateFilter || authTypeFilter) ? `(${[dateFilter, authTypeFilter].filter(Boolean).length})` : ''}</span>
     </button>
   </div>
+  {#if dateFilter || authTypeFilter}
+    <div class="filter-tags">
+      {#if dateFilter}
+        <div class="filter-tag">
+          Date: {new Date(dateFilter).toLocaleDateString()}
+          <button class="tag-remove" on:click={() => dateFilter = ''}>×</button>
+        </div>
+      {/if}
+      {#if authTypeFilter}
+        <div class="filter-tag">
+          Type: {authTypeFilter}
+          <button class="tag-remove" on:click={() => authTypeFilter = ''}>×</button>
+        </div>
+      {/if}
+      <div class="filter-tag clear-all">
+        Clear all
+        <button class="tag-remove" on:click={handleClearAll}>×</button>
+      </div>
+    </div>
+  {/if}
+</div>
 
   <FilterModal
     isOpen={isFilterOpen}
@@ -330,9 +357,51 @@
 
   .table-controls {
     display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .controls-top {
+    display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+  }
+
+  .filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .filter-tag {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background-color: #f5f5f5;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .tag-remove {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 0.25rem;
+    font-size: 1.2rem;
+    line-height: 1;
+    color: #999;
+    cursor: pointer;
+  }
+
+  .tag-remove:hover {
+    color: #666;
+  }
+
+  .filter-tag.clear-all {
+    background-color: #eee;
   }
 
   .search-wrapper {

@@ -46,30 +46,20 @@
           />
         </div>
         
+        <div class="separator"></div>
+        
         <div class="filter-group">
-          <label class="form-label">Authorization type</label>
-          <div class="auth-types-container">
-            <div class="auth-types">
-              <button
-                type="button"
-                class="auth-type-button"
-                class:selected={!selectedAuthType}
-                on:click={() => selectedAuthType = ''}
-              >
-                All
-              </button>
-              {#each authTypes as authType}
-                <button
-                  type="button"
-                  class="auth-type-button"
-                  class:selected={selectedAuthType === authType}
-                  on:click={() => selectedAuthType = authType}
-                >
-                  {authType}
-                </button>
-              {/each}
-            </div>
-          </div>
+          <label class="form-label" for="authTypeFilter">Authorization type</label>
+          <select 
+            id="authTypeFilter"
+            class="form-input"
+            bind:value={selectedAuthType}
+          >
+            <option value="">All</option>
+            {#each authTypes as authType}
+              <option value={authType}>{authType}</option>
+            {/each}
+          </select>
         </div>
 
         <div class="actions">
@@ -154,6 +144,12 @@
     margin-bottom: 1.5rem;
   }
 
+  .separator {
+    height: 1px;
+    background-color: #f1f1f1;
+    margin: 1.5rem 0;
+  }
+
   .form-label {
     display: block;
     margin-bottom: 0.5rem;
@@ -167,6 +163,7 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 0.9rem;
+    background-color: white;
   }
 
   .form-input:focus {
@@ -174,40 +171,13 @@
     border-color: #000;
   }
 
-  .auth-types-container {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 1rem;
-  }
-
-  .auth-types {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .auth-type-button {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 20px;
+  select.form-input {
     cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.9rem;
-    white-space: nowrap;
-  }
-
-  .auth-type-button:hover {
-    border-color: #000;
-    background: #f8f8f8;
-  }
-
-  .auth-type-button.selected {
-    background: #000;
-    color: #fff;
-    border-color: #000;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 9L1 4h10z' fill='%23666666'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
   }
 
   .actions {
