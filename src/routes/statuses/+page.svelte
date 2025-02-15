@@ -50,7 +50,6 @@
           <th>Message</th>
           <th>Last Try</th>
           <th>Next Try</th>
-          <th class="text-right">Actions</th>
         </tr>
       </thead>
       <tbody>
