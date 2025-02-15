@@ -36,30 +36,40 @@
       </div>
 
       <div class="modal-content">
-        <div class="filter-group">
-          <label class="form-label" for="dateFilter">Date created</label>
-          <input 
-            type="date" 
-            id="dateFilter"
-            class="form-input"
-            bind:value={selectedDate}
-          />
-        </div>
-        
-        <div class="separator"></div>
-        
-        <div class="filter-group">
-          <label class="form-label" for="authTypeFilter">Authorization type</label>
-          <select 
-            id="authTypeFilter"
-            class="form-input"
-            bind:value={selectedAuthType}
-          >
-            <option value="">All</option>
-            {#each authTypes as authType}
-              <option value={authType}>{authType}</option>
-            {/each}
-          </select>
+        <div class="filters-container">
+          <div class="filters-grid">
+            <label class="filter-label" for="dateFilter">Date created</label>
+            <input 
+              type="date" 
+              id="dateFilter"
+              class="form-input"
+              bind:value={selectedDate}
+            />
+            
+            <div class="separator"></div>
+            
+            <label class="filter-label">Authorization type</label>
+            <div class="auth-types">
+              <button
+                type="button"
+                class="auth-type-button"
+                class:selected={!selectedAuthType}
+                on:click={() => selectedAuthType = ''}
+              >
+                All
+              </button>
+              {#each authTypes as authType}
+                <button
+                  type="button"
+                  class="auth-type-button"
+                  class:selected={selectedAuthType === authType}
+                  on:click={() => selectedAuthType = authType}
+                >
+                  {authType}
+                </button>
+              {/each}
+            </div>
+          </div>
         </div>
 
         <div class="actions">
@@ -93,7 +103,7 @@
     background: white;
     border-radius: 8px;
     width: 95%;
-    max-width: 500px;
+    max-width: 650px;
     max-height: 90vh;
     display: flex;
     flex-direction: column;
@@ -140,21 +150,27 @@
     overflow-y: auto;
   }
 
-  .filter-group {
-    margin-bottom: 1.5rem;
+  .filters-container {
+    margin-bottom: 2rem;
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .filter-label {
+    color: #333;
+    font-weight: 500;
   }
 
   .separator {
+    grid-column: 1 / -1;
     height: 1px;
     background-color: #f1f1f1;
     margin: 1.5rem 0;
-  }
-
-  .form-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #333;
-    font-weight: 500;
   }
 
   .form-input {
@@ -171,13 +187,32 @@
     border-color: #000;
   }
 
-  select.form-input {
+  .auth-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .auth-type-button {
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    color: #666;
     cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 9L1 4h10z' fill='%23666666'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    padding-right: 2rem;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+
+  .auth-type-button:hover {
+    border-color: #000;
+    background: #f8f8f8;
+  }
+
+  .auth-type-button.selected {
+    background: #000;
+    color: white;
+    border-color: #000;
   }
 
   .actions {
