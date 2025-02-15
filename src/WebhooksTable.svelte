@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import DeleteWebhookModal from './DeleteWebhookModal.svelte';
+  import EditWebhookModal from './EditWebhookModal.svelte';
 
   interface User {
     avatar: string;
@@ -27,7 +28,9 @@
   let isFilterOpen = false;
   let activeDropdown: string | null = null;
   let webhookToDelete: Webhook | null = null;
+  let webhookToEdit: Webhook | null = null;
   let showDeleteModal = false;
+  let showEditModal = false;
   let showSuccessToast = false;
   let successMessage = '';
 
@@ -58,15 +61,28 @@
     currentPage * itemsPerPage
   );
 
-  async function editWebhook(webhook: Webhook) {
+  function editWebhook(webhook: Webhook) {
+    webhookToEdit = webhook;
+    showEditModal = true;
+    activeDropdown = null;
+  }
+
+  async function handleEditSubmit(event: CustomEvent) {
     try {
       loading = true;
-      console.log('Edit webhook:', webhook);
+      // Here you would make an API call to update the webhook
+      console.log('Update webhook:', event.detail);
+      
+      // Mock successful update
+      const updatedWebhook = event.detail;
+      webhooks = webhooks.map(w => w.id === updatedWebhook.id ? { ...w, ...updatedWebhook } : w);
+      showToast(`"${updatedWebhook.nickname}" updated successfully`);
+      showEditModal = false;
+      webhookToEdit = null;
     } catch (err) {
-      error = err instanceof Error ? err.message : 'Failed to edit webhook';
+      error = err instanceof Error ? err.message : 'Failed to update webhook';
     } finally {
       loading = false;
-      activeDropdown = null;
     }
   }
 
@@ -483,6 +499,18 @@
         webhookToDelete = null;
       }}
       onConfirm={handleConfirmDelete}
+    />
+  {/if}
+
+  {#if showEditModal && webhookToEdit}
+    <EditWebhookModal
+      show={showEditModal}
+      webhook={webhookToEdit}
+      on:close={() => {
+        showEditModal = false;
+        webhookToEdit = null;
+      }}
+      on:submit={handleEditSubmit}
     />
   {/if}
 
